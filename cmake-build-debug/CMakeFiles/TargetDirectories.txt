@@ -1,0 +1,3 @@
+/Users/philippemonfouayi/CLionProjects/untitled15/cmake-build-debug/CMakeFiles/untitled15.dir
+/Users/philippemonfouayi/CLionProjects/untitled15/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/philippemonfouayi/CLionProjects/untitled15/cmake-build-debug/CMakeFiles/rebuild_cache.dir
