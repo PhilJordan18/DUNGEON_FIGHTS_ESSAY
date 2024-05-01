@@ -86,8 +86,14 @@ void attribuerEquipements(Joueur *joueur, Apotres *apotres, int nbApotres, Equip
 void remplirDonjon(Apotres *apotres, int nbApotres);
 void afficherDonjon();
 
+// Fonctions pour les différents calculs
+double calculerDommages(double attaque, double defense, double precision);
+int determinerpremierCombattant(const Joueur *joueur, const Apotres *apotre);
+
 // Fonctions pour les actions et intercations le long du jeu
 void deplacerJoueur(Joueur *joueur, const int *abscissesX, int *ordonneesY);
+void combattre(Joueur *joueur, Apotres *apotres);
+void combattreDansSalle(Joueur *joueur, Salle *salle);
 
 
 void validerQuitter();
@@ -582,6 +588,75 @@ void deplacerJoueur(Joueur *joueur, const int *abscissesX, int *ordonneesY) {
     } else {
         printf("IL N'Y AUCUN APÔTRE DANS CETTE SALLE, CHERCHEZ LES AILLEURS!!\n");
     }
+}
+
+int determinerpremierCombattant(const Joueur *joueur, const Apotres *apotre) {
+    int doubleChance = rand() % 100;
+    if (joueur->chance > apotre->chance || doubleChance >= 50) {
+        return 1;
+    } else{
+        return -1;
+    }
+}
+
+double min (double hp) {
+    if (hp > 0) {
+        return hp;
+    } else{
+        return 0;
+    }
+}
+
+double calculerDommages(double attaque, double defense, double precision) {
+    double dommages = attaque - defense;
+    int precisionRequise = rand() % 100;
+
+    if (precisionRequise > precision) {
+        dommages = 0;
+        printf("%s VOUS VENEZ DE MANQUER VOTRE ATTAQUE, L'APÔTRE N'A REÇUT AUCUN DÉGÂTS %s", VIOLET, NEUTRE);
+    }
+
+    return dommages;
+}
+
+void combattre(Joueur *joueur, Apotres *apotre) {
+    int premierCombattant = determinerpremierCombattant(joueur, apotre);
+    int tour = 1;
+    double dommagesJoueur, dommagesApotre;
+
+    while (joueur->hp > 0 && apotre->hp > 0) {
+
+        if (premierCombattant == 1) {
+        // Appliquer les dommages
+        dommagesJoueur = calculerDommages(joueur->ap, apotre->dp, joueur->precision);
+        apotre->hp -= dommagesJoueur;
+        printf("%s VOUS INFLIGEZ %f DE DÉGATS À %s %s",JAUNE, dommagesJoueur, apotre->nom, NEUTRE);
+
+        if (min(apotre->hp) == 0) {
+            joueur->gainXP += (int) apotre->pointsXP;
+            printf("%s VOUS AVEZ VAINCU %s %s", VERT, apotre->nom, NEUTRE);
+            printf("%s VOUS GAGNEZ  %d POINTS XP %s", VERT, joueur->gainXP, NEUTRE);
+            break;
+        }
+        } else {
+            // L'apotre attaque
+            // Appliquer les dommages
+        dommagesApotre = calculerDommages(apotre->ap, joueur->dp, apotre->precision);
+        joueur->hp -= (int) dommagesApotre;
+        printf("%s %s VOUS INFLIGE %f DE DÉGATS  !!%s",JAUNE, apotre->nom, dommagesJoueur,  NEUTRE);
+        if (min(joueur->hp) == 0) {
+            printf("%s VOUS ÊTES MORT...  %s", ROUGE, NEUTRE);
+            break;
+        }
+        }
+
+        tour++;
+        premierCombattant *= -1;
+    }
+}
+
+void combattreDansSalle(Joueur *joueur, Salle *salle) {
+
 }
 
 
